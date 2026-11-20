@@ -3,6 +3,10 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { verifyPacket } from "./verify-participant.mjs";
 const root = process.cwd();
+if (fs.existsSync(path.join(root, "src/features/prototype/study.tsx")))
+  throw new Error(
+    "This branch includes the later-stage shortlist study. Do not distribute it as a baseline participant source package; deploy the reviewed static dist/ behind host-level access control instead.",
+  );
 const argument = process.argv[2];
 if (!argument || !path.isAbsolute(argument))
   throw new Error("Pass an absolute output directory outside the repository.");

@@ -7,8 +7,6 @@ import { usePrototype } from "./store";
 import { publishedJobs } from "./model";
 import { cn } from "@/lib/utils";
 
-import peopleArt from "../../../docs/design-system/agent-kit/assets/people.png";
-
 const categories = [
   {
     slug: "build",
@@ -58,7 +56,17 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-          <img className="people-art" src={peopleArt} alt="Dwie osoby pracujące razem z laptopem" />
+          <div className="hero-signal" aria-label="DoRoboty.ai: ludzie, projekty i AI">
+            <span className="hero-signal-label">DoRoboty.ai / prototyp badawczy</span>
+            <span className="hero-signal-line" aria-hidden="true" />
+            <strong>Praca, w której widać Twój wkład.</strong>
+            <small>Pokaż decyzje, użycie AI i rzeczywisty efekt projektu.</small>
+            <div className="hero-signal-tags">
+              <span>BUILD</span>
+              <span>APPLY</span>
+              <span>LEAD</span>
+            </div>
+          </div>
         </div>
       </section>
 

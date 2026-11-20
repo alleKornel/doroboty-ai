@@ -1,3 +1,5 @@
+> Historical Poster People baseline document. For the current shortlist branch, use [DOROBOTO-DARK.md](DOROBOTO-DARK.md). The preserved kit remains immutable.
+
 # Poster People — host implementation rules
 
 Read with the [project guide](README.md), [host catalog](HOST-COMPONENTS.md), [current status](STATUS.md), immutable [component API](agent-kit/components/API.md) and [human reference](agent-kit/reference/components.md). These are project integration rules, not a replacement v1 kit or a new reference release. Use the [acceptance checklist](VERIFICATION.md) before claiming completion.

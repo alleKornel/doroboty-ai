@@ -68,4 +68,11 @@ describe("browser persistence and recovery", () => {
       expect(parseState(JSON.stringify({ ...state, theme }))).toEqual(state);
     }
   });
+  it("migrates a version-one export without study fields", () => {
+    const legacy = { ...initialState(), contributionCards: undefined, studyReviews: undefined };
+    const imported = parseState(JSON.stringify(legacy));
+    expect(imported.contributionCards).toEqual([]);
+    expect(imported.studyReviews).toEqual([]);
+    expect(imported.applications).toEqual(legacy.applications);
+  });
 });

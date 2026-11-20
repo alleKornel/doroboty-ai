@@ -1,5 +1,5 @@
 import { initialState, stateSchema, type State } from "./model";
-export const STORAGE_KEY = "doroboty.prototype.v1";
+export const STORAGE_KEY = "doroboty.prototype.shortlist.v1";
 export const MAX_IMPORT_BYTES = 2_000_000;
 export interface StoragePort {
   getItem(key: string): string | null;

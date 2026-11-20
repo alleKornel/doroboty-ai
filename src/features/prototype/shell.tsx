@@ -9,6 +9,7 @@ import {
   UserRound,
   Bookmark,
   FileText,
+  ListChecks,
   Users,
   Building2,
   Settings,
@@ -57,6 +58,7 @@ export function NotFound() {
 const candidateNav = [
   ["/app", "Przegląd", LayoutDashboard],
   ["/app/profil", "Profil", UserRound],
+  ["/app/karta-projektu", "Karta projektu", FileText],
   ["/app/zapisane", "Zapisane oferty", Bookmark],
   ["/app/aplikacje", "Moje aplikacje", FileText],
 ] as const;
@@ -64,6 +66,7 @@ const employerNav = [
   ["/app", "Przegląd", LayoutDashboard],
   ["/app/oferty", "Moje oferty", BriefcaseBusiness],
   ["/app/kandydaci", "Kandydaci", Users],
+  ["/app/shortlista", "Badanie shortlisty", ListChecks],
   ["/app/organizacja", "Organizacja", Building2],
 ] as const;
 export function Shell() {

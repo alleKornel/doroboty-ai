@@ -1,3 +1,5 @@
+> Historical Poster People baseline document. For the current shortlist branch, use [DOROBOTO-DARK.md](DOROBOTO-DARK.md). The preserved kit remains immutable.
+
 # Poster People — application acceptance checklist
 
 Use with [implementation rules](IMPLEMENTATION.md) and the [project guide](README.md). This checklist incorporates the implementation audits A01–A08/R01–R04 and the later process/application/interaction work. Read the [host catalog](HOST-COMPONENTS.md), [record APIs](RECORDS.md) and [status/open findings](STATUS.md) for current owners. It defines checks to execute; it does not claim any future screen has passed them.

@@ -7,7 +7,6 @@ import { BackLink } from "@/components/back-link";
 import { ResponsivePanel } from "@/components/responsive-panel";
 import { SalaryFact } from "@/features/jobs/salary-fact";
 import { functionLabels } from "@/features/jobs/presentation";
-import peopleArt from "../../../docs/design-system/agent-kit/assets/people.png";
 import { CompanyLogo } from "@/features/jobs/company-logo";
 import { JobCard } from "@/features/jobs/job-card";
 import { JobFiltersForm } from "@/features/jobs/job-filters";
@@ -166,11 +165,20 @@ export function JobsPage() {
                 Znajdź rolę, w której zrobisz coś dobrego.
               </p>
             </div>
-            <img
-              className="pp-people-art"
-              src={peopleArt}
-              alt="Dwie osoby pracujące razem z laptopem"
-            />
+            <div
+              className="pp-people-art hero-signal"
+              aria-label="Tworzenie, wdrażanie i rozwijanie AI"
+            >
+              <span className="hero-signal-label">Praca + AI</span>
+              <span className="hero-signal-line" aria-hidden="true" />
+              <strong>Rola. Wkład. Efekt.</strong>
+              <small>Znajdź pracę, w której liczy się to, co zrobisz.</small>
+              <div className="hero-signal-tags">
+                <span>BUILD</span>
+                <span>APPLY</span>
+                <span>LEAD</span>
+              </div>
+            </div>
           </div>
           <form
             key={`${filters.query ?? ""}:${filters.location ?? ""}`}
@@ -480,7 +488,11 @@ export function JobPage() {
                 Oferty tej firmy <ArrowRight />
               </Link>
             </div>
-            <img src={peopleArt} alt="" />
+            <div className="pp-employer-signal" aria-hidden="true">
+              AI
+              <br />×<br />
+              LUDZIE
+            </div>
           </div>
         </section>
       </div>

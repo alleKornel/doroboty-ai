@@ -40,7 +40,8 @@ export function PersonPicker() {
     <section className="prototype-section max-w-4xl">
       <h1>Wybierz osobę</h1>
       <p className="mt-4 mb-8 text-muted-foreground">
-        Wybierz profil, z którego chcesz korzystać w prototypie. Hasło nie jest potrzebne.
+        Wybierz fikcyjny profil do sesji. Przy badaniach zewnętrznych prowadzący przekaże hasło do
+        strony.
       </p>
       <div className="grid gap-5 sm:grid-cols-2">
         {people.map((person) => (
@@ -134,6 +135,12 @@ export function WorkspaceHome() {
           to={candidate ? "/app/profil" : "/app/oferty"}
         >
           {candidate ? "Edytuj profil" : "Zarządzaj ofertami"}
+        </Link>
+        <Link
+          className={buttonVariants({ variant: "outline" })}
+          to={candidate ? "/app/karta-projektu" : "/app/shortlista"}
+        >
+          {candidate ? "Przygotuj kartę projektu" : "Otwórz badanie shortlisty"}
         </Link>
       </div>
     </>

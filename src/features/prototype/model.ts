@@ -17,7 +17,16 @@ const companySchema = z.object({
   name: shortText,
   summary: text,
   description: text,
-  websiteUrl: z.string().max(500),
+  websiteUrl: z
+    .string()
+    .max(500)
+    .refine((value) => {
+      try {
+        return ["http:", "https:"].includes(new URL(value).protocol);
+      } catch {
+        return false;
+      }
+    }, "Company website must use HTTP or HTTPS"),
   location: shortText,
   sizeLabel: shortText,
   logoUrl: z
@@ -130,6 +139,48 @@ const draftSchema = z.object({
   generated: text,
   answer: text,
 });
+export const cardSections = [
+  "challenge",
+  "contribution",
+  "aiUse",
+  "outcome",
+  "reflection",
+] as const;
+export const cardLabels: Record<(typeof cardSections)[number], string> = {
+  challenge: "Wyzwanie",
+  contribution: "Mój wkład",
+  aiUse: "Rola AI",
+  outcome: "Efekt",
+  reflection: "Wnioski",
+};
+export const contributionSchema = z.object({
+  challenge: text.max(1200),
+  contribution: text.max(1200),
+  aiUse: text.max(1200),
+  outcome: text.max(1200),
+  reflection: text.max(1200),
+});
+export type Contribution = z.infer<typeof contributionSchema>;
+const decisionSchema = z.object({
+  choice: z.enum(["invite", "hold", "reject"]),
+  reason: z.string().trim().min(10).max(1200),
+  question: z.string().trim().max(1200),
+  at: z.iso.datetime(),
+});
+const cardSchema = z.object({
+  candidateId: id,
+  draft: contributionSchema,
+  published: contributionSchema.nullable(),
+  version: z.number().int().nonnegative(),
+  publishedAt: z.iso.datetime().nullable(),
+});
+const reviewSchema = z.object({
+  applicationId: id,
+  profileDecision: decisionSchema.optional(),
+  cardDecision: decisionSchema.optional(),
+  cardVersion: z.number().int().positive().optional(),
+  ratings: z.partialRecord(z.enum(cardSections), z.number().int().min(1).max(5)),
+});
 export const stateSchema = z
   .object({
     version: z.literal(1),
@@ -140,6 +191,8 @@ export const stateSchema = z
     applications: z.array(applicationSchema).max(2000),
     saved: z.array(z.object({ candidateId: id, jobId: id })).max(5000),
     drafts: z.array(draftSchema).max(1000),
+    contributionCards: z.array(cardSchema).max(100).default([]),
+    studyReviews: z.array(reviewSchema).max(2000).default([]),
   })
   .superRefine((s, ctx) => {
     const problem = (message: string) => ctx.addIssue({ code: "custom", message });
@@ -193,6 +246,34 @@ export const stateSchema = z
         pairs.add(key);
       }
     }
+    const cards = new Set<string>();
+    for (const card of s.contributionCards) {
+      if (!candidates.has(card.candidateId) || cards.has(card.candidateId))
+        problem("Invalid contribution card reference");
+      cards.add(card.candidateId);
+      if ((card.published === null) !== (card.publishedAt === null))
+        problem("Invalid contribution publication");
+    }
+    const reviews = new Set<string>();
+    for (const review of s.studyReviews) {
+      const application = s.applications.find((a) => a.id === review.applicationId);
+      if (!application || reviews.has(review.applicationId))
+        problem("Invalid study review reference");
+      reviews.add(review.applicationId);
+      const card = s.contributionCards.find((c) => c.candidateId === application?.candidateId);
+      if (
+        review.cardVersion !== undefined &&
+        (!card?.published || review.cardVersion !== card.version)
+      )
+        problem("Outdated contribution card review");
+      if (
+        (review.cardDecision || Object.keys(review.ratings).length) &&
+        review.cardVersion === undefined
+      )
+        problem("Missing contribution card review version");
+      if ((review.cardDecision || Object.keys(review.ratings).length) && !review.profileDecision)
+        problem("Study variants must be reviewed in order");
+    }
   });
 export type State = z.infer<typeof stateSchema>;
 export type Person = State["people"][number];
@@ -213,7 +294,25 @@ export type Action =
   | { type: "stage"; applicationId: string; stage: Stage; note: string }
   | { type: "withdraw"; applicationId: string }
   | { type: "publish"; job: z.infer<typeof jobSchema> }
-  | { type: "company"; name: string; description: string };
+  | { type: "company"; name: string; description: string }
+  | { type: "card_draft"; value: Contribution }
+  | { type: "card_publish" }
+  | { type: "card_withdraw" }
+  | {
+      type: "study_rate";
+      applicationId: string;
+      section: (typeof cardSections)[number];
+      rating: number;
+    }
+  | {
+      type: "study_decide";
+      applicationId: string;
+      variant: "profile" | "card";
+      choice: "invite" | "hold" | "reject";
+      reason: string;
+      question: string;
+    }
+  | { type: "study_restart"; applicationId: string };
 
 export function initialState(): State {
   const state = stateSchema.parse({
@@ -224,6 +323,8 @@ export function initialState(): State {
     applications: [],
     saved: [],
     drafts: [],
+    contributionCards: [],
+    studyReviews: [],
   });
   const bob = state.people.find((x) => x.id === "candidate-marek")!;
   const job = state.jobs[0];
@@ -244,6 +345,25 @@ export function initialState(): State {
     stage: "submitted",
     events: [{ stage: "submitted", at: "2026-11-02T09:00:00.000Z", note: "" }],
   });
+  state.contributionCards.push({
+    candidateId: bob.id,
+    draft: {
+      challenge: "Zespół obsługi tracił czas na ręczne klasyfikowanie powtarzalnych zgłoszeń.",
+      contribution:
+        "Zaprojektowałem badania, prototyp klasyfikacji i zasady przekazania trudnych przypadków człowiekowi.",
+      aiUse:
+        "Model proponował kategorię i szkic odpowiedzi; konsultant zawsze zatwierdzał wysyłkę.",
+      outcome: "W fikcyjnym pilotażu średni czas pierwszej odpowiedzi spadł o 25%.",
+      reflection:
+        "Najtrudniejsze było rozpoznanie zgłoszeń, których model nie powinien obsługiwać.",
+    },
+    published: null,
+    version: 0,
+    publishedAt: null,
+  });
+  state.contributionCards[0].published = structuredClone(state.contributionCards[0].draft);
+  state.contributionCards[0].version = 1;
+  state.contributionCards[0].publishedAt = "2026-11-02T09:00:00.000Z";
   return stateSchema.parse(state);
 }
 export function publishedJobs(state: State): JobWithCompany[] {
@@ -350,6 +470,98 @@ export function transition(
       s.companies.find((x) => x.id === p.companyId)!,
       { name: shortText.parse(action.name), description: text.parse(action.description) },
     );
+  } else if (action.type === "card_draft") {
+    const p = candidate();
+    const value = contributionSchema.parse(action.value);
+    const card = s.contributionCards.find((c) => c.candidateId === p.id);
+    if (card) card.draft = value;
+    else
+      s.contributionCards.push({
+        candidateId: p.id,
+        draft: value,
+        published: null,
+        version: 0,
+        publishedAt: null,
+      });
+  } else if (action.type === "card_publish") {
+    const p = candidate();
+    const card = s.contributionCards.find((c) => c.candidateId === p.id);
+    if (!card) return fail("Najpierw zapisz szkic karty.");
+    if (cardSections.some((section) => card.draft[section].trim().length < 10))
+      return fail("Uzupełnij każdą sekcję karty co najmniej 10 znakami.");
+    card.published = structuredClone(card.draft);
+    card.version += 1;
+    card.publishedAt = now;
+    for (const review of s.studyReviews.filter(
+      (r) => s.applications.find((a) => a.id === r.applicationId)?.candidateId === p.id,
+    )) {
+      review.ratings = {};
+      delete review.cardDecision;
+      delete review.cardVersion;
+    }
+  } else if (action.type === "card_withdraw") {
+    const p = candidate();
+    const card = s.contributionCards.find((c) => c.candidateId === p.id);
+    if (!card?.published) return fail("Karta nie jest opublikowana.");
+    card.published = null;
+    card.publishedAt = null;
+    for (const review of s.studyReviews.filter(
+      (r) => s.applications.find((a) => a.id === r.applicationId)?.candidateId === p.id,
+    )) {
+      review.ratings = {};
+      delete review.cardDecision;
+      delete review.cardVersion;
+    }
+  } else if (
+    action.type === "study_rate" ||
+    action.type === "study_decide" ||
+    action.type === "study_restart"
+  ) {
+    const p = employer();
+    const application = s.applications.find(
+      (a) => a.id === action.applicationId && a.companyId === p.companyId,
+    );
+    if (!application) return fail("Nie znaleziono aplikacji własnej firmy.");
+    if (action.type === "study_restart") {
+      s.studyReviews = s.studyReviews.filter((r) => r.applicationId !== application.id);
+      return stateSchema.parse(s);
+    }
+    let review = s.studyReviews.find((r) => r.applicationId === application.id);
+    if (!review) {
+      review = { applicationId: application.id, ratings: {} };
+      s.studyReviews.push(review);
+    }
+    if ((action.type === "study_rate" || action.variant === "card") && !review.profileDecision)
+      return fail("Najpierw zapisz decyzję na podstawie samego profilu.");
+    if (action.type === "study_decide" && action.variant === "profile" && review.profileDecision)
+      return fail(
+        "Pierwsza decyzja jest już zapisana. Aby rozpocząć od nowa, zresetuj porównanie.",
+      );
+    if (action.type === "study_rate" || action.variant === "card") {
+      const card = s.contributionCards.find((c) => c.candidateId === application.candidateId);
+      if (!card?.published) return fail("Kandydat nie opublikował karty.");
+      review.cardVersion = card.version;
+      if (action.type === "study_rate") {
+        if (
+          !cardSections.includes(action.section) ||
+          !Number.isInteger(action.rating) ||
+          action.rating < 1 ||
+          action.rating > 5
+        )
+          fail("Ocena sekcji musi być od 1 do 5.");
+        review.ratings[action.section] = action.rating;
+      }
+    }
+    if (action.type === "study_decide") {
+      const decision = decisionSchema.parse({
+        choice: action.choice,
+        reason: action.reason,
+        question: action.question,
+        at: now,
+      });
+      if (action.variant === "profile") review.profileDecision = decision;
+      else review.cardDecision = decision;
+    }
   }
   return stateSchema.parse(s);
 }

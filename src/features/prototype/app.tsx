@@ -17,6 +17,7 @@ import {
 import { EmployerJobs, EmployerJobEditor, CompanyEditor } from "./employer";
 import { SettingsPage, PrivacyPage } from "./settings";
 import { CasePage } from "./case";
+import { ContributionEditor, ShortlistStudy } from "./study";
 function AppRoutes() {
   return (
     <Routes>
@@ -58,6 +59,14 @@ function AppRoutes() {
           element={
             <RequireRole role="candidate">
               <ProfilePage preview />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="app/karta-projektu"
+          element={
+            <RequireRole role="candidate">
+              <ContributionEditor />
             </RequireRole>
           }
         />
@@ -122,6 +131,14 @@ function AppRoutes() {
           element={
             <RequireRole role="employer">
               <ApplicationsPage employer />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="app/shortlista"
+          element={
+            <RequireRole role="employer">
+              <ShortlistStudy />
             </RequireRole>
           }
         />
