@@ -26,3 +26,11 @@ npm run preview
 Static output is `dist/`. Browser checks require provisioned Playwright Chromium; app startup does not install it. The release must be protected by a host-level shared password before any HTML or asset is served. Follow [release procedure](docs/SHORTLIST_RELEASE.md) and review the [offline readiness report](docs/production-readiness.html) before invitations. Do not distribute the full repository history or use the baseline participant source-packaging command on this later-stage branch.
 
 See [current features](FEATURES.md), [participant guide](docs/PARTICIPANT_GUIDE.md), [architecture](docs/architecture.md) and [case protocol](docs/case/CASE_PROTOCOL.md).
+
+## Optional PostHog analytics
+
+Copy `.env.example` to `.env.local` and set `VITE_POSTHOG_ENABLED=true`, `VITE_POSTHOG_PROJECT_TOKEN`, `VITE_POSTHOG_HOST` and `VITE_POSTHOG_SITE_ORIGIN` from the selected project and deployed site. Add the same four values in Netlify's build environment, then rebuild. The SDK token is public and write-only; never use a personal API key. Local env files are ignored by Git.
+
+Analytics runs only in production on that exact site origin. Development, preview URLs and unconfigured builds send no analytics. It records pageviews of four static public routes and native Autocapture for the homepage “Zobacz oferty” CTA. Other routes, forms, profile/card contents, study notes, search parameters, DOM content and referrers are excluded. Session replay, profiles, surveys, flags, error and performance collection are disabled. IDs are kept in memory without cookies and Do Not Track is respected. SDK failure does not block the app.
+
+The Netlify deployment remains private to its owner until participant access is configured separately. See [integration scope and verification](docs/tasks/posthog-event-scout.md). A successful build does not prove events reached PostHog.

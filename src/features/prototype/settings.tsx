@@ -129,6 +129,14 @@ export function PrivacyPage() {
           scenariusz, w tym notatki.
         </p>
         <p>
+          Wersja badawcza może korzystać z PostHoga w regionie UE: zapisuje wejścia na publiczne
+          strony i kliknięcie „Zobacz oferty” na stronie głównej. Nie przekazuje treści formularzy,
+          profili, kart projektów, notatek ani parametrów wyszukiwania. Nie nagrywa sesji. Losowy
+          identyfikator analityki jest przechowywany tylko w pamięci otwartej karty; nie korzysta z
+          plików cookie ani nie łączy zdarzeń z wybraną osobą scenariusza. Uwzględnia ustawienie „Do
+          Not Track” przeglądarki.
+        </p>
+        <p>
           Możesz usunąć zmiany przyciskiem „Resetuj scenariusz” w ustawieniach lub wyczyścić dane
           witryny w przeglądarce. Hosting może prowadzić własne logi dostępu.
         </p>
