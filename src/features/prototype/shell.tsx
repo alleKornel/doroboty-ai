@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import {
   Menu,
@@ -55,6 +55,26 @@ export function NotFound() {
     </section>
   );
 }
+
+class ScreenBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <section className="prototype-section" role="alert">
+        <h1>Nie udało się otworzyć widoku</h1>
+        <p className="my-5">Odśwież stronę, aby pobrać aktualną wersję prototypu.</p>
+        <Button onClick={() => window.location.reload()}>Odśwież stronę</Button>
+      </section>
+    );
+  }
+}
+
 const candidateNav = [
   ["/app", "Przegląd", LayoutDashboard],
   ["/app/profil", "Profil", UserRound],
@@ -109,7 +129,17 @@ export function Shell() {
         </p>
       )}
       <div key={`${state.activePersonId}:${pathname}`}>
-        <Outlet />
+        <ScreenBoundary>
+          <Suspense
+            fallback={
+              <p role="status" className="prototype-section">
+                Ładujemy widok…
+              </p>
+            }
+          >
+            <Outlet />
+          </Suspense>
+        </ScreenBoundary>
       </div>
     </>
   );
@@ -217,7 +247,7 @@ export function Shell() {
                 <BrandMark />
                 <span>DoRoboty.ai</span>
               </Link>
-              <nav aria-label="Główna nawigacja" className="flex items-center gap-2 sm:gap-5">
+              <nav aria-label="Główna nawigacja" className="flex items-center gap-2 lg:gap-5">
                 {navigation.map((item) => (
                   <Link
                     key={item.to}
@@ -228,7 +258,7 @@ export function Shell() {
                   </Link>
                 ))}
                 {person ? (
-                  <div className="flex items-center gap-[var(--gui-space-xs)] sm:gap-[var(--gui-space-m)]">
+                  <div className="flex items-center gap-[var(--gui-space-xs)] lg:gap-[var(--gui-space-m)]">
                     {person.role === "candidate" && (
                       <>
                         <Link

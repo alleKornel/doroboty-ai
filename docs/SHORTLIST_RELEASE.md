@@ -1,15 +1,22 @@
-# Shortlist prototype release procedure
+# DoRoboty.ai demo release
 
-This branch is a static Vite prototype with synthetic scenario data. It has no application login, server or shared database. Persona selection is a simulation. Browser storage, including study notes and ratings, stays on that browser; JSON export/import is the transfer mechanism. The facilitator deletes exported files within 30 days of analysis.
+Netlify builds the `codex/shortlist-readiness` branch of `alleKornel/doroboty-ai`. The build command, Node major and publish directory live in `netlify.toml`. The owner approved a public link for a synthetic demo. The staged output is `dist/` and includes the baseline exercise CSV. Persona switching is part of the simulation. Edits and study notes live in each browser. The facilitator deletes exported JSON 30 days after analysis.
 
-## Build and review
+## Prepare and publish
 
-1. Use Node 24, run `npm ci`, `./scripts/verify`, `npm run build` and review the generated `dist/`. Browser tests require provisioned Playwright Chromium. The exact results of this worktree are recorded in `docs/tasks/dark-shortlist-readiness.md` and the offline `docs/production-readiness.html`.
-2. Confirm the published package contains only this build and synthetic records. Do not put a shared password, token or participant information into JavaScript, HTML, repository variables or client storage.
-3. Choose a host that enforces a shared password **before serving `index.html`, every built asset, hash route, preview URL and older deployment URL**. A browser-only password screen is insufficient. Keep the password in the host's access-control settings and share it only with invited participants through the facilitator.
-4. Test the exact release URL in a private browser without the password: the host must refuse HTML and assets. Then enter the password and check first load, reload, direct hash links, candidate publication, employer study, mobile layout, export and reset. Repeat the no-password check for preview and prior public URLs. Rotate or remove access when the study ends.
-5. Record the host, URL, deployment identifier, reviewer, date and access test in the readiness report. Only then send invitations for moderated sessions (maximum 10 concurrent participants). The facilitator uses the invitation contact channel for reports, checks the site manually before each session and pauses sessions if it fails.
+1. Use Node 24 and run `npm ci`, then `./scripts/verify` with Playwright Chromium. The gate builds and verifies the exact contents of `dist/`. Use a clean browser for the smoke check.
+2. Keep the latest successful Netlify deploy ID and commit as a rollback target. Push the reviewed commit to the configured branch. Check the Netlify deploy log and verify that the published deploy points to that commit.
+3. Verify the reviewed dist and release URLs before making the demo public. The app shell and Netlify headers request no indexing. The URL is available to anyone who has it once the visibility setting is public. Share the link through the facilitator after the public checks below.
+4. Optional PostHog uses a public project token and an exact production origin. The other build settings are versioned. Keep private API keys and personal data out of client-side assets and Netlify snippets.
 
-## Rollback and data
+## Smoke check before each session
 
-Keep the previous verified static artifact as a private rollback target. If the new build breaks, stop invitations, restore that artifact behind the same host-level password, and verify the protected URL. Do not restore an older public artifact. Restart a browser scenario through Settings only after exporting any session notes needed for analysis. Local state loss is acceptable for the pilot, but it must be disclosed to participants and facilitators.
+- From a fresh browser, open [the demo](https://doroboty-ai-rnpq.netlify.app/) over HTTPS. Confirm Build, Apply, Lead, the portraits, and the primary browse button. Open one category and a job detail through a copied hash URL; reload.
+- Use prepared personas to publish a contribution card and complete both employer study variants in order. Reload, confirm decisions survived, then check export/import/reset in the isolated browser. Use fictional content. Stop the session if the primary journey or storage recovery fails.
+- The facilitator is the incident contact through the invitation. Record time, deploy ID, route, device and symptom. Check the Deploys activity and build log, and check browser console and network errors in the throwaway session. The facilitator checks manually before sessions, with a limit of 10 concurrent participants in the first series. The team owner checks Netlify Usage before the series.
+
+## Recover
+
+Pause invitations. In Netlify Deploys, confirm the last working commit on a successful deploy. Netlify can republish that immutable deploy with **Publish deploy**. Pin it or stop automatic publishing while repairing a broken revision, then run the same smoke check on the main URL. Record the rollback deploy ID. As a session fallback, open the last checked artifact on the facilitator’s computer and share the screen. Export useful fictional observations before a browser reset. Local state is independent of the published build.
+
+[Netlify rollback and deploy history](https://docs.netlify.com/deploy/manage-deploys/manage-deploys-overview/) · [Netlify usage and limits](https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/how-credits-work/)

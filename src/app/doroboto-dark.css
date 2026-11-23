@@ -166,11 +166,6 @@ h3 {
   font-size: clamp(19px, 2.2vw, 24px);
   line-height: 1.25;
 }
-.home-intro h1 {
-  font-size: clamp(42px, 6vw, 72px);
-  line-height: 1.04;
-  letter-spacing: -0.05em;
-}
 header:has([aria-label="Główna nawigacja"]),
 footer,
 .sidebar,

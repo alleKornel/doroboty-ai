@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Field } from "./workspace";
+import { Field } from "./field";
 import { PageTitle, Empty } from "./shell";
 import { usePrototype } from "./store";
 import {

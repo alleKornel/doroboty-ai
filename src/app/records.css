@@ -206,8 +206,10 @@
 }
 .record-stage {
   padding: 3px 12px;
-  border-radius: 18px;
-  background: #ffe0f7;
+  border: 1px solid var(--gui-edge);
+  border-radius: var(--gui-radius-m);
+  background: var(--gui-control-hover);
+  color: var(--gui-text);
 }
 .record-stage:focus {
   outline: 2px solid var(--gui-focus);

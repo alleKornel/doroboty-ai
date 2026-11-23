@@ -1,24 +1,60 @@
+import { lazy } from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router";
 import { PrototypeProvider } from "./store";
 import { Shell, NotFound } from "./shell";
 import HomePage from "./home";
 import MethodologyPage from "./methodology";
-import { JobsPage, JobPage, CompanyPage } from "./marketplace";
-import {
-  PersonPicker,
-  RequireRole,
-  WorkspaceHome,
-  ProfilePage,
-  SavedPage,
-  ApplyPage,
-  ApplicationsPage,
-  ApplicationDetail,
-} from "./workspace";
-import { EmployerJobs, EmployerJobEditor, CompanyEditor } from "./employer";
-import { SettingsPage, PrivacyPage } from "./settings";
-import { CasePage } from "./case";
-import { ContributionEditor, ShortlistStudy } from "./study";
+import { PersonPicker, RequireRole } from "./workspace-access";
 import { AnalyticsPageviews } from "@/features/analytics/pageviews";
+
+const JobsPage = lazy(() =>
+  import("./marketplace").then((screen) => ({ default: screen.JobsPage })),
+);
+const JobPage = lazy(() => import("./marketplace").then((screen) => ({ default: screen.JobPage })));
+const CompanyPage = lazy(() =>
+  import("./marketplace").then((screen) => ({ default: screen.CompanyPage })),
+);
+const WorkspaceHome = lazy(() =>
+  import("./workspace").then((screen) => ({ default: screen.WorkspaceHome })),
+);
+const ProfilePage = lazy(() =>
+  import("./workspace").then((screen) => ({ default: screen.ProfilePage })),
+);
+const SavedPage = lazy(() =>
+  import("./workspace").then((screen) => ({ default: screen.SavedPage })),
+);
+const ApplyPage = lazy(() =>
+  import("./workspace").then((screen) => ({ default: screen.ApplyPage })),
+);
+const ApplicationsPage = lazy(() =>
+  import("./workspace").then((screen) => ({ default: screen.ApplicationsPage })),
+);
+const ApplicationDetail = lazy(() =>
+  import("./workspace").then((screen) => ({ default: screen.ApplicationDetail })),
+);
+const EmployerJobs = lazy(() =>
+  import("./employer").then((screen) => ({ default: screen.EmployerJobs })),
+);
+const EmployerJobEditor = lazy(() =>
+  import("./employer").then((screen) => ({ default: screen.EmployerJobEditor })),
+);
+const CompanyEditor = lazy(() =>
+  import("./employer").then((screen) => ({ default: screen.CompanyEditor })),
+);
+const SettingsPage = lazy(() =>
+  import("./settings").then((screen) => ({ default: screen.SettingsPage })),
+);
+const PrivacyPage = lazy(() =>
+  import("./settings").then((screen) => ({ default: screen.PrivacyPage })),
+);
+const CasePage = lazy(() => import("./case").then((screen) => ({ default: screen.CasePage })));
+const ContributionEditor = lazy(() =>
+  import("./study").then((screen) => ({ default: screen.ContributionEditor })),
+);
+const ShortlistStudy = lazy(() =>
+  import("./study").then((screen) => ({ default: screen.ShortlistStudy })),
+);
+
 function AppRoutes() {
   return (
     <Routes>

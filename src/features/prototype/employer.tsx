@@ -14,7 +14,7 @@ import {
 } from "@/features/jobs/presentation";
 import { currentPerson, jobSchema } from "./model";
 import { usePrototype } from "./store";
-import { Field } from "./workspace";
+import { Field } from "./field";
 import { Empty, NotFound, PageTitle } from "./shell";
 
 export function EmployerJobs() {

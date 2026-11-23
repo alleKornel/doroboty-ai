@@ -23,7 +23,7 @@ npm run preview
 ./scripts/verify
 ```
 
-Static output is `dist/`. Browser checks require provisioned Playwright Chromium; app startup does not install it. The release must be protected by a host-level shared password before any HTML or asset is served. Follow [release procedure](docs/SHORTLIST_RELEASE.md) and review the [offline readiness report](docs/production-readiness.html) before invitations. Do not distribute the full repository history or use the baseline participant source-packaging command on this later-stage branch.
+Static output is `dist/`. Browser checks require provisioned Playwright Chromium. The owner approved a public demo using synthetic data. Follow the [release procedure](docs/SHORTLIST_RELEASE.md) and review the [offline readiness report](docs/production-readiness.html) before sharing. The baseline participant source packager is deliberately blocked on this study branch.
 
 See [current features](FEATURES.md), [participant guide](docs/PARTICIPANT_GUIDE.md), [architecture](docs/architecture.md) and [case protocol](docs/case/CASE_PROTOCOL.md).
 
@@ -33,4 +33,4 @@ Copy `.env.example` to `.env.local` and set `VITE_POSTHOG_ENABLED=true`, `VITE_P
 
 Analytics runs only in production on that exact site origin. Development, preview URLs and unconfigured builds send no analytics. It records pageviews of four static public routes and native Autocapture for the homepage “Zobacz oferty” CTA. Other routes, forms, profile/card contents, study notes, search parameters, DOM content and referrers are excluded. Session replay, profiles, surveys, flags, error and performance collection are disabled. IDs are kept in memory without cookies and Do Not Track is respected. SDK failure does not block the app.
 
-The Netlify deployment remains private to its owner until participant access is configured separately. See [integration scope and verification](docs/tasks/posthog-event-scout.md). A successful build does not prove events reached PostHog.
+Historical integration evidence is recorded in the [Event Scout task](docs/tasks/posthog-event-scout.md). The [offline readiness report](docs/production-readiness.html) records checks for the current version.

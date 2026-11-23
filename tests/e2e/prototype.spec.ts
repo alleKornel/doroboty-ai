@@ -294,8 +294,11 @@ test("mobile navigation, dark appearance and keyboard person selection", async (
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 test("core screens have no serious accessibility violations", async ({ page }) => {
-  await page.goto("/#/oferty");
+  await page.goto("/#/");
   let results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+  expect(results.violations).toEqual([]);
+  await page.goto("/#/oferty");
+  results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
   expect(results.violations).toEqual([]);
   await choose(page, "Anna Kowalska");
   await page.goto("/#/app/profil");
@@ -304,14 +307,58 @@ test("core screens have no serious accessibility violations", async ({ page }) =
 });
 
 test("public home and filters reflow at 320px with no external requests", async ({ page }) => {
+  const external: string[] = [];
+  page.on("request", (request) => {
+    if (!request.url().startsWith("http://127.0.0.1:3106")) external.push(request.url());
+  });
   await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Praca dla ludzi");
-  await page.screenshot({ path: "artifacts/home-desktop.png", fullPage: true });
+  const paths = page.getByRole("list", { name: "Ścieżki pracy z AI" });
+  await expect(paths.getByRole("link")).toHaveCount(3);
+  for (const portrait of await paths.locator("img").all()) {
+    await expect
+      .poll(() =>
+        portrait.evaluate((image) => (image instanceof HTMLImageElement ? image.naturalWidth : 0)),
+      )
+      .toBe(320);
+  }
+  const build = paths.getByRole("link", { name: "Build Buduj AI" });
+  const lead = paths.getByRole("link", { name: "Lead Prowadź zmiany" });
+  await lead.hover();
+  await expect
+    .poll(() => lead.locator("..").evaluate((element) => getComputedStyle(element).translate))
+    .not.toBe("0px 0px");
+  await page.mouse.move(5, 5);
+  await page.screenshot({ path: "artifacts/home-desktop.png", animations: "disabled" });
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 320, height: 740 });
-  await page.goto("/#/oferty");
+  await expect(build).toHaveCSS("animation-name", "none");
+  await expect(lead.locator("..")).toHaveCSS("translate", "none");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: "artifacts/home-mobile.png", fullPage: true });
+  await build.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/#\/oferty\?category=build$/);
+  await expect(page.getByRole("button", { name: /^Build/ })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: "artifacts/jobs-mobile.png", fullPage: true });
+  expect(external).toEqual([]);
+});
+
+test("a failed screen download offers a reload that preserves the destination", async ({
+  page,
+}) => {
+  await page.route("**/assets/marketplace-*.js", (route) => route.abort(), { times: 1 });
+  await page.goto("/#/oferty");
+  await expect(page.getByRole("heading", { name: "Nie udało się otworzyć widoku" })).toBeVisible();
+  await page.getByRole("button", { name: "Odśwież stronę" }).click();
+  await expect(page.getByRole("textbox", { name: "Szukaj ofert", exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/#\/oferty$/);
 });
 
 test("application submission explains short answers and missing approval without losing input", async ({
@@ -639,7 +686,7 @@ for (const width of [1280, 390])
 
 test("homepage and marketplace actions use legible dark-system roles", async ({ page }) => {
   await page.goto("/#/");
-  const cards = page.locator("main article.prototype-panel");
+  const cards = page.getByRole("list", { name: "Ścieżki pracy z AI" }).getByRole("link");
   await expect(cards).toHaveCount(3);
   for (const card of await cards.all()) {
     await expect(card).toHaveCSS("border-radius", "6px");
@@ -857,6 +904,8 @@ for (const reducedMotion of ["no-preference", "reduce"] as const) {
     ).toBe(1);
     await page.clock.fastForward(reducedMotion === "reduce" ? 1 : 1000);
     await expect(page).toHaveURL(/#\/app\/aplikacje\?wyslano=1$/);
+    await page.clock.resume();
+    await expect(page.getByRole("heading", { name: "Moje aplikacje", exact: true })).toBeVisible();
     await expect(page.locator(".confetti-burst")).toHaveCount(0);
     await page.reload();
     await expect(page.locator(".confetti-burst")).toHaveCount(0);
