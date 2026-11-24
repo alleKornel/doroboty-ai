@@ -10,7 +10,7 @@ const buttonVariants = cva(
         default:
           "bg-[var(--gui-color-1)] text-[var(--gui-accent-text)] [--control-hover-bg:var(--gui-accent-hover)] [--control-hover-text:var(--gui-accent-text)] shadow-[var(--gui-edge-shadow)]",
         outline:
-          "bg-[var(--gui-surface)] shadow-[var(--gui-edge-shadow)] text-[var(--gui-text)] [--control-hover-bg:var(--gui-color-1-transparent)] aria-expanded:bg-[var(--gui-neutral-3-transparent)]",
+          "bg-[var(--gui-surface)] shadow-[var(--gui-control-outline)] text-[var(--gui-text)] [--control-hover-bg:var(--gui-color-1-transparent)] aria-expanded:bg-[var(--gui-neutral-3-transparent)]",
         secondary:
           "bg-[var(--gui-surface-muted)] text-[var(--gui-text)] [--control-hover-bg:var(--gui-neutral-4)] aria-expanded:bg-[var(--gui-neutral-4-transparent)]",
         ghost:

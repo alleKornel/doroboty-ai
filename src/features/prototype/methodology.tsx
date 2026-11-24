@@ -1,3 +1,5 @@
+import { CategoryBackdrop } from "./category-backdrop";
+
 const criteria = [
   ["AI zmienia pracę", "Technologia wpływa na odpowiedzialność, decyzje lub rezultat stanowiska."],
   [
@@ -16,7 +18,8 @@ const criteria = [
 
 export default function MethodologyPage() {
   return (
-    <article className="mx-auto max-w-5xl px-5 py-14 lg:px-8 lg:py-20">
+    <article className="category-hero mx-auto max-w-5xl px-5 py-14 lg:px-8 lg:py-20">
+      <CategoryBackdrop scene="methodology" />
       <p className="text-xs font-medium tracking-[var(--gui-tracking-xl)] text-muted-foreground">
         Nasze kryteria
       </p>

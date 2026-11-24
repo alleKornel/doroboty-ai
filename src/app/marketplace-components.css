@@ -491,7 +491,7 @@
   gap: 20px;
   padding: 25px;
   border-bottom: 1px solid var(--pp-ink);
-  background: white;
+  background: var(--pp-surface);
 }
 .pp-dialog-heading h2 {
   font-size: 24px;
@@ -526,7 +526,7 @@
   position: sticky;
   bottom: 0;
   padding: 15px 24px max(15px, env(safe-area-inset-bottom));
-  background: white;
+  background: var(--pp-surface);
   border-top: 1px solid var(--pp-ink);
 }
 @media (max-width: 1100px) {
@@ -671,24 +671,15 @@
     width: 14px;
   }
   .pp-category-tabs {
-    display: flex;
-    gap: 7px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
     padding-bottom: 20px;
-    margin-right: -18px;
-    padding-right: 18px;
-  }
-  .pp-category-tabs::-webkit-scrollbar {
-    display: none;
   }
   .pp-category-tab {
     min-height: 44px;
-    padding: 10px 12px;
-    gap: 13px;
+    padding: 10px;
+    gap: 8px;
     font-size: 11px;
-    flex-shrink: 0;
-    white-space: nowrap;
   }
   .pp-category-tab b {
     font-size: 12px;

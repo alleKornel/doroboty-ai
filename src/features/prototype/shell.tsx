@@ -92,10 +92,11 @@ const employerNav = [
 export function Shell() {
   const { state, issue, error, clearError } = usePrototype();
   const person = currentPerson(state);
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const workspace = pathname.startsWith("/app") && person;
   const [menuAt, setMenuAt] = useState<string | null>(null);
   const main = useRef<HTMLElement>(null);
+  const workspaceMenuButton = useRef<HTMLButtonElement>(null);
   const lastPath = useRef(pathname);
   useEffect(() => {
     if (lastPath.current !== pathname) {
@@ -105,6 +106,18 @@ export function Shell() {
       lastPath.current = pathname;
     }
   }, [pathname, clearError]);
+  useEffect(() => {
+    const region = main.current;
+    if (!region) return;
+    const updateTitle = () => {
+      const heading = region.querySelector("h1")?.innerText.replace(/\s+/g, " ").trim();
+      document.title = heading ? `${heading} | DoRoboty.ai` : "DoRoboty.ai";
+    };
+    updateTitle();
+    const observer = new MutationObserver(updateTitle);
+    observer.observe(region, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
+  }, [pathname, workspace]);
   const nav =
     person?.role === "employer"
       ? employerNav
@@ -163,6 +176,7 @@ export function Shell() {
               DoRoboty.ai
             </Link>
             <Button
+              ref={workspaceMenuButton}
               aria-label={menuAt === pathname ? "Zamknij menu" : "Otwórz menu"}
               aria-expanded={menuAt === pathname}
               aria-controls="workspace-nav"
@@ -175,8 +189,20 @@ export function Shell() {
           </div>
           <aside
             className={`sidebar ${menuAt === pathname ? "sidebar-open" : ""}`}
+            onBlur={(e) => {
+              if (
+                menuAt === pathname &&
+                !e.currentTarget.contains(e.relatedTarget) &&
+                e.relatedTarget !== workspaceMenuButton.current
+              ) {
+                setMenuAt(null);
+              }
+            }}
             onKeyDown={(e) => {
-              if (e.key === "Escape") setMenuAt(null);
+              if (e.key === "Escape" && menuAt === pathname) {
+                setMenuAt(null);
+                workspaceMenuButton.current?.focus();
+              }
             }}
           >
             <Link className="brand" to="/">
@@ -238,7 +264,7 @@ export function Shell() {
       ) : (
         <>
           <header className="bg-background/95 shadow-[var(--gui-divider-bottom-shadow)] backdrop-blur supports-[backdrop-filter]:bg-background/80">
-            <div className="mx-auto flex h-16 max-w-[1360px] items-center justify-between gap-4 px-5 lg:px-8">
+            <div className="mx-auto grid max-w-[1360px] grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 pt-2 md:flex md:gap-4 md:py-0">
               <Link
                 className="flex items-center gap-2.5 text-base font-semibold tracking-[var(--gui-tracking-s)]"
                 to="/"
@@ -247,69 +273,65 @@ export function Shell() {
                 <BrandMark />
                 <span>DoRoboty.ai</span>
               </Link>
-              <nav aria-label="Główna nawigacja" className="flex items-center gap-2 lg:gap-5">
+              <nav
+                aria-label="Główna nawigacja"
+                className="order-last col-span-2 flex flex-wrap items-center gap-x-4 md:order-none md:ml-auto md:gap-x-3 lg:gap-x-5"
+              >
                 {navigation.map((item) => (
                   <Link
                     key={item.to}
-                    className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:inline"
+                    className="inline-flex min-h-9 items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground aria-[current=page]:text-foreground aria-[current=page]:underline aria-[current=page]:underline-offset-4"
                     to={item.to}
+                    aria-current={
+                      item.to === `${pathname}${search}` || item.to === pathname
+                        ? "page"
+                        : undefined
+                    }
                   >
                     {item.label}
                   </Link>
                 ))}
-                {person ? (
-                  <div className="flex items-center gap-[var(--gui-space-xs)] lg:gap-[var(--gui-space-m)]">
-                    {person.role === "candidate" && (
-                      <>
-                        <Link
-                          className="hidden text-sm font-medium text-muted-foreground md:inline"
-                          to="/app/aplikacje"
-                        >
-                          Aplikacje
-                        </Link>
-                        <Link
-                          className="hidden text-sm font-medium text-muted-foreground md:inline"
-                          to="/app/profil"
-                        >
-                          Profil
-                        </Link>
-                      </>
-                    )}
-                    <Link
-                      to="/app"
-                      className={cn(
-                        buttonVariants({ variant: "outline", size: "lg" }),
-                        "text-sm font-medium max-sm:min-h-10 max-sm:px-[var(--gui-space-xs)] max-sm:text-sm",
-                      )}
-                    >
-                      Moje konto
-                    </Link>
-                    <Link
-                      className={cn(
-                        buttonVariants({ variant: "ghost", size: "icon" }),
-                        "hidden md:inline-flex",
-                      )}
-                      to="/auth/sign-in"
-                      aria-label="Zmień osobę"
-                      title="Zmień osobę"
-                    >
-                      <LogOut aria-hidden="true" />
-                    </Link>
-                  </div>
-                ) : (
+                {person?.role === "candidate" && (
                   <>
                     <Link
-                      to="/auth/sign-in?audience=candidate"
-                      className={cn(
-                        buttonVariants({ variant: "outline", size: "lg" }),
-                        "text-sm font-medium max-sm:min-h-10 max-sm:px-[var(--gui-space-xs)] max-sm:text-sm",
-                      )}
+                      className="hidden min-h-9 items-center text-sm font-medium text-muted-foreground md:inline-flex"
+                      to="/app/aplikacje"
                     >
-                      Wybierz osobę
+                      Aplikacje
+                    </Link>
+                    <Link
+                      className="hidden min-h-9 items-center text-sm font-medium text-muted-foreground md:inline-flex"
+                      to="/app/profil"
+                    >
+                      Profil
                     </Link>
                   </>
                 )}
               </nav>
+              <div className="flex items-center gap-1 lg:gap-3">
+                <Link
+                  to={person ? "/app" : "/auth/sign-in?audience=candidate"}
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "text-sm font-medium max-sm:min-h-10 max-sm:px-[var(--gui-space-xs)]",
+                  )}
+                >
+                  {person ? "Moje konto" : "Wybierz osobę"}
+                </Link>
+                {person && (
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: "ghost", size: "icon" }),
+                      "hidden md:inline-flex",
+                    )}
+                    to="/auth/sign-in"
+                    aria-label="Zmień osobę"
+                    title="Zmień osobę"
+                  >
+                    <LogOut aria-hidden="true" />
+                  </Link>
+                )}
+              </div>
             </div>
           </header>
           <main id="main" ref={main} tabIndex={-1} className="outline-none">
@@ -326,7 +348,7 @@ export function Shell() {
               </div>
               <nav
                 aria-label="Stopka"
-                className="flex flex-wrap content-start gap-x-6 gap-y-3 text-sm text-muted-foreground sm:justify-end"
+                className="flex flex-wrap content-start gap-x-6 gap-y-3 text-sm text-muted-foreground sm:justify-end [&_a]:inline-flex [&_a]:min-h-6 [&_a]:items-center"
               >
                 <Link to="/oferty">Oferty</Link>
                 <Link to="/metodologia">Metodologia</Link>

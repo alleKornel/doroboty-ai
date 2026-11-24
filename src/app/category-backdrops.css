@@ -1,0 +1,166 @@
+.category-hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.category-backdrop {
+  --scene-primary: #48e6f4;
+  --scene-secondary: #ed5ae4;
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  max-height: 28rem;
+  overflow: clip;
+  opacity: 0.46;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 82% 28%,
+    color-mix(in srgb, var(--scene-primary) 10%, transparent),
+    transparent 57%
+  );
+  mask-image:
+    linear-gradient(110deg, transparent 8%, #000 66%), linear-gradient(#000 56%, transparent);
+  mask-composite: intersect;
+}
+
+.category-backdrop span {
+  position: absolute;
+  display: block;
+}
+
+.category-backdrop-grid {
+  inset: 12% -12% -45% 28%;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--scene-primary) 16%, transparent) 0 1px,
+      transparent 1px 28px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--scene-primary) 16%, transparent) 0 1px,
+      transparent 1px 28px
+    );
+  transform: perspective(35rem) rotateX(48deg) rotateZ(-13deg);
+  mask-image: radial-gradient(ellipse at 70% 56%, #000 24%, transparent 72%);
+}
+
+.category-backdrop-shape {
+  inset: 9% 1% 3% 40%;
+  background:
+    repeating-linear-gradient(0deg, #48e6f418 0 1px, transparent 1px 12px),
+    repeating-linear-gradient(90deg, #ed5ae424 0 2px, transparent 2px 18px),
+    linear-gradient(120deg, transparent, #2a5c6f66);
+  clip-path: polygon(
+    0 90%,
+    0 70%,
+    8% 70%,
+    8% 53%,
+    17% 53%,
+    17% 78%,
+    25% 78%,
+    25% 43%,
+    33% 43%,
+    33% 32%,
+    45% 32%,
+    45% 66%,
+    52% 66%,
+    52% 48%,
+    61% 48%,
+    61% 20%,
+    73% 20%,
+    73% 42%,
+    81% 42%,
+    81% 6%,
+    91% 6%,
+    91% 34%,
+    100% 34%,
+    100% 100%
+  );
+}
+
+.category-backdrop--methodology {
+  --scene-primary: #91f2c4;
+  --scene-secondary: #48e6f4;
+}
+
+.category-backdrop--methodology .category-backdrop-shape {
+  inset: -18% -4% -6% 42%;
+  background:
+    radial-gradient(circle at 72% 37%, #91f2c455 0 2px, transparent 3px),
+    radial-gradient(circle at 57% 55%, #48e6f45c 0 3px, transparent 4px),
+    repeating-radial-gradient(ellipse at 69% 51%, #91f2c437 0 1px, transparent 1px 21px),
+    repeating-linear-gradient(90deg, #48e6f422 0 1px, transparent 1px 45px);
+  clip-path: none;
+  mask-image: radial-gradient(ellipse at 70% 48%, #000 8%, transparent 62%);
+  transform: skewY(-8deg);
+}
+
+.category-backdrop--employer {
+  --scene-primary: #ed5ae4;
+  --scene-secondary: #48e6f4;
+}
+
+.category-backdrop--employer .category-backdrop-shape {
+  inset: 7% -4% 13% 43%;
+  background:
+    repeating-linear-gradient(138deg, #48e6f42b 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(42deg, #ed5ae43d 0 2px, transparent 2px 32px),
+    linear-gradient(145deg, transparent 27%, #a8419652 85%);
+  clip-path: polygon(5% 42%, 34% 42%, 52% 17%, 98% 17%, 98% 70%, 80% 91%, 23% 91%);
+}
+
+.category-backdrop-sweep {
+  inset: 0 -18% 0 36%;
+  opacity: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    color-mix(in srgb, var(--scene-secondary) 18%, transparent) 48%,
+    transparent 59%
+  );
+  mask-image: repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 11px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .category-backdrop-shape {
+    animation: category-scene-arrive 850ms ease-out both;
+  }
+
+  .category-backdrop-sweep {
+    animation: category-scene-sweep 3.8s ease-out both;
+  }
+}
+
+@keyframes category-scene-arrive {
+  from {
+    opacity: 0.45;
+    translate: 0 8px;
+  }
+}
+
+@keyframes category-scene-sweep {
+  0% {
+    opacity: 0;
+    translate: -20% 0;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    translate: 12% 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .category-backdrop {
+    opacity: 0.42;
+  }
+}
+
+@media (forced-colors: active) {
+  .category-backdrop {
+    display: none;
+  }
+}

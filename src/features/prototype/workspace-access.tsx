@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { CategoryBackdrop } from "./category-backdrop";
 import { currentPerson } from "./model";
 import { Empty } from "./shell";
 import { usePrototype } from "./store";
@@ -17,7 +19,10 @@ export function PersonPicker() {
       : state.people;
   const safeNext = next && /^\/(?!\/)/.test(next) && !next.startsWith("/auth") ? next : null;
   return (
-    <section className="prototype-section max-w-4xl">
+    <section
+      className={cn("prototype-section max-w-4xl", audience === "employer" && "category-hero")}
+    >
+      {audience === "employer" && <CategoryBackdrop scene="employer" />}
       <h1>Wybierz osobę</h1>
       <p className="mt-4 mb-8 text-muted-foreground">
         Wybierz fikcyjny profil, aby wypróbować proces. W aplikacjach używaj wyłącznie przykładowych
@@ -62,7 +67,8 @@ export function RequireRole({
   if (role && person.role !== role)
     return (
       <Empty>
-        <p className="mb-4">
+        <h1>Ten widok wymaga innej roli</h1>
+        <p className="my-4">
           Ten widok jest dostępny dla{" "}
           {role === "candidate" ? "kandydata" : role === "employer" ? "pracodawcy" : "prowadzącego"}
           .

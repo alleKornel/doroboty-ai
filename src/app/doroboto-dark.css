@@ -70,6 +70,8 @@
   --gui-text-muted: #9aaab2;
   --gui-text-muted-accessible: #9aaab2;
   --gui-edge: #2a4652;
+  --gui-control-edge: #6b8996;
+  --gui-control-outline: inset 0 0 0 1px var(--gui-control-edge);
   --gui-accent: #c7ff4a;
   --gui-accent-text: #070a10;
   --gui-accent-text-accessible: #070a10;
@@ -210,8 +212,14 @@ header:has([aria-label="Główna nawigacja"]) {
   background: #172533;
   border-radius: var(--gui-radius-s);
 }
-.native-select {
-  border-color: var(--gui-edge);
+.native-select,
+[data-slot="input"],
+[data-slot="textarea"] {
+  border-color: var(--gui-control-edge);
+}
+[data-slot="select-trigger"],
+[data-slot="checkbox"][aria-checked="false"] {
+  box-shadow: var(--gui-control-outline);
 }
 .native-select,
 input,
@@ -243,10 +251,14 @@ select option {
   border-color: var(--gui-edge);
 }
 .pp-search-form,
-.pp-filter-button,
 .pp-search-submit {
   border-color: var(--gui-edge);
   border-radius: var(--gui-radius-s);
+}
+.pp-search-form,
+.pp-filter-button,
+.pp-category-tab:not(.pp-selected) {
+  border-color: var(--gui-control-edge);
 }
 .pp-search-submit {
   color: #070a10;
@@ -254,6 +266,7 @@ select option {
 .pp-filter-button {
   background: var(--gui-surface);
   color: var(--gui-text);
+  border-radius: var(--gui-radius-s);
 }
 .pp-view-link[aria-current="page"] {
   background: var(--gui-accent);
@@ -294,6 +307,13 @@ select option {
 }
 .pp-location-field select {
   background-image: none;
+}
+.pp-location-chevron {
+  position: absolute;
+  inset-inline-end: 10px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
 }
 .record-sheet,
 .record-sheet-header,

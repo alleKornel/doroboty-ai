@@ -15,22 +15,10 @@
   line-height: 1.02;
   letter-spacing: -2.5px;
 }
-.pp-intro-copy h1 span {
-  position: relative;
-  display: inline-block;
-  isolation: isolate;
-}
-.pp-intro-copy h1 span:before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  left: -5px;
-  right: -8px;
-  bottom: 2px;
-  height: 20px;
-  border-radius: 8px;
-  background: var(--pp-action);
-  transform: rotate(-1deg);
+.pp-intro-accent {
+  text-decoration: underline var(--gui-link) 0.055em;
+  text-underline-offset: 0.16em;
+  text-decoration-skip-ink: auto;
 }
 .pp-intro-copy p {
   color: var(--pp-muted);
@@ -128,39 +116,21 @@
 }
 @media (max-width: 600px) {
   .pp-intro-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 128px;
-    gap: 13px;
+    grid-template-columns: minmax(0, 1fr);
     min-height: 0;
     padding: 27px 0 21px;
   }
-  .pp-intro-copy {
-    display: contents;
-  }
   .pp-intro-copy h1 {
-    grid-column: 1/-1;
     font-size: 43px;
     line-height: 1.04;
     letter-spacing: -2px;
   }
-  .pp-intro-copy h1 span:before {
-    height: 13px;
-    bottom: 1px;
-    left: -2px;
-    right: -4px;
-  }
   .pp-intro-copy p {
-    grid-column: 1;
-    font-size: 12px;
-    line-height: 1.6;
-    margin: 0;
-    align-self: center;
+    font-size: 14px;
+    margin-top: 18px;
   }
-  .pp-people-art {
-    grid-column: 2;
-    width: 128px;
-    height: 110px;
-    max-width: none;
+  .pp-intro-grid .pp-people-art {
+    display: none;
   }
   .pp-board-layout {
     padding-top: 24px;

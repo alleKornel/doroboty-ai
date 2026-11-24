@@ -9,6 +9,7 @@
 @import "./application.css";
 @import "./interactions.css";
 @import "./doroboto-dark.css";
+@import "./category-backdrops.css";
 
 @theme inline {
   --color-background: var(--background);

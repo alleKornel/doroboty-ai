@@ -2,7 +2,7 @@ import { Link, useLocation, useParams, useSearchParams } from "react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowUpRight, Users, MapPin, BriefcaseBusiness, Bookmark } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Search, ArrowRight, Monitor, X } from "lucide-react";
+import { Search, ArrowRight, ChevronDown, Monitor, X } from "lucide-react";
 import { BackLink } from "@/components/back-link";
 import { ResponsivePanel } from "@/components/responsive-panel";
 import { SalaryFact } from "@/features/jobs/salary-fact";
@@ -24,6 +24,7 @@ import type { JobWithCompany } from "@/features/jobs/types";
 import { usePrototype } from "./store";
 import { currentPerson, publishedJobs } from "./model";
 import { NotFound } from "./shell";
+import { CategoryBackdrop } from "./category-backdrop";
 import { cn } from "@/lib/utils";
 
 function LocalMap({ jobs }: { jobs: JobWithCompany[] }) {
@@ -150,14 +151,15 @@ export function JobsPage() {
   const locations = [...new Set(all.flatMap((x) => x.locations))];
   return (
     <>
-      <section className="pp-intro-section">
+      <section className="pp-intro-section category-hero">
+        <CategoryBackdrop scene="jobs" />
         <div className="pp-container">
           <div className="pp-intro-grid">
             <div className="pp-intro-copy">
               <h1>
                 Dobra robota.
                 <br />
-                <span>Z AI w środku.</span>
+                <span className="pp-intro-accent">Z AI w środku.</span>
               </h1>
               <p>
                 Dla ludzi, którzy tworzą, wdrażają i rozwijają AI.
@@ -214,6 +216,7 @@ export function JobsPage() {
                   ),
                 )}
               </select>
+              <ChevronDown className="pp-icon pp-location-chevron" aria-hidden="true" />
             </label>
             <Button type="submit" className="pp-search-submit">
               Szukaj <ArrowRight className="pp-icon" />
@@ -522,7 +525,8 @@ export function CompanyPage() {
   if (!company) return <NotFound />;
   const jobs = publishedJobs(state).filter((x) => x.companyId === company.id);
   return (
-    <article className="mx-auto max-w-[1360px] px-5 py-14 lg:px-8 lg:py-20">
+    <article className="category-hero mx-auto max-w-[1360px] px-5 py-14 lg:px-8 lg:py-20">
+      <CategoryBackdrop scene="employer" />
       <div className="grid gap-8 pb-12 shadow-[var(--gui-divider-bottom-shadow)] lg:grid-cols-[1fr_320px]">
         <div>
           <CompanyLogo company={company} size="large" />
@@ -534,21 +538,23 @@ export function CompanyPage() {
             {company.description}
           </p>
         </div>
-        <dl className="h-fit rounded-xl bg-muted/35 p-6 text-sm">
-          <div className="flex gap-2">
-            <MapPin className="size-5" />
+        <div className="h-fit rounded-xl bg-muted/35 p-6 text-sm">
+          <dl className="space-y-5">
             <div>
-              <dt className="font-medium">Lokalizacja</dt>
-              <dd className="mt-1 text-muted-foreground">{company.location}</dd>
+              <dt className="flex items-center gap-2 font-medium">
+                <MapPin className="size-5 shrink-0" aria-hidden="true" />
+                Lokalizacja
+              </dt>
+              <dd className="mt-1 ps-7 text-muted-foreground">{company.location}</dd>
             </div>
-          </div>
-          <div className="mt-5 flex gap-2">
-            <Users className="size-5" />
             <div>
-              <dt className="font-medium">Wielkość</dt>
-              <dd className="mt-1 text-muted-foreground">{company.sizeLabel}</dd>
+              <dt className="flex items-center gap-2 font-medium">
+                <Users className="size-5 shrink-0" aria-hidden="true" />
+                Wielkość
+              </dt>
+              <dd className="mt-1 ps-7 text-muted-foreground">{company.sizeLabel}</dd>
             </div>
-          </div>
+          </dl>
           {/^https?:\/\//i.test(company.websiteUrl) && (
             <a
               className="mt-6 inline-flex items-center gap-2 font-medium text-[var(--gui-link)] hover:underline"
@@ -559,7 +565,7 @@ export function CompanyPage() {
               Strona firmy <ArrowUpRight className="size-4" />
             </a>
           )}
-        </dl>
+        </div>
       </div>
       <section className="py-12">
         <h2 className="text-2xl font-semibold">Otwarte role</h2>
